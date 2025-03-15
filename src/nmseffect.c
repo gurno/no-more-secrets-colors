@@ -25,11 +25,11 @@
 #include "nmstermio.h"
 #include "nmscharset.h"
 
-// Speed settings
-#define TYPE_EFFECT_SPEED    4     // miliseconds per char
-#define JUMBLE_SECONDS       2     // number of seconds for jumble effect
-#define JUMBLE_LOOP_SPEED    35    // miliseconds between each jumble
-#define REVEAL_LOOP_SPEED    50    // miliseconds between each reveal loop
+// Speed settings (now configurable)
+static int TYPE_EFFECT_SPEED    = 4;     // miliseconds per char
+static int JUMBLE_SECONDS       = 2;     // number of seconds for jumble effect
+static int JUMBLE_LOOP_SPEED    = 35;    // miliseconds between each jumble
+static int REVEAL_LOOP_SPEED    = 50;    // miliseconds between each reveal loop
 
 // Behavior settings
 static int autoDecrypt      = 0;            // Auto-decrypt flag
@@ -340,11 +340,44 @@ void nmseffect_set_clearscr(int setting) {
  * do not support color. Though, compiling with ncurses support is perhaps
  * a better option, as it will detect color capabilities automatically.
  */
-void nmseffect_set_color(int setting) {
+void nmseffect_use_color(int setting) {
 	if (setting)
 		colorOn = 1;
 	else
 		colorOn = 0;
+}
+
+/*
+ * Set the TYPE_EFFECT_SPEED value. This controls how fast the characters
+ * are initially displayed on the screen (milliseconds per character).
+ */
+void nmseffect_set_type_speed(int speed) {
+	if (speed > 0)
+		TYPE_EFFECT_SPEED = speed;
+}
+
+/*
+ * Set the number of seconds the jumble effect will run.
+ */
+void nmseffect_set_jumble_seconds(int seconds) {
+	if (seconds >= 0)
+		JUMBLE_SECONDS = seconds;
+}
+
+/*
+ * Set the speed of the jumble effect (milliseconds between updates).
+ */
+void nmseffect_set_jumble_speed(int speed) {
+	if (speed > 0)
+		JUMBLE_LOOP_SPEED = speed;
+}
+
+/*
+ * Set the speed of the reveal effect (milliseconds between updates).
+ */
+void nmseffect_set_reveal_speed(int speed) {
+	if (speed > 0)
+		REVEAL_LOOP_SPEED = speed;
 }
 
 /*

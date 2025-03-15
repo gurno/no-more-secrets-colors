@@ -8,10 +8,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <ctype.h>
 #include <sys/ioctl.h>
 #include "nmseffect.h"
 
-int main(void) {
+#define VERSION "1.0.1"
+
+int main(int argc, char *argv[]) {
+	int o;
 	int termCols, spaces = 0;
 	unsigned char *display_uc = NULL;
 	char *display        = NULL;
@@ -29,6 +34,60 @@ int main(void) {
 	char *menu6          = "[6] Remote Operator Logon/Logoff";
 	char *foot1Center    = "================================================================";
 	char *foot2Center    = "[ ] Select Option or ESC to Abort";
+	
+	// Process command line options
+	while ((o = getopt(argc, argv, "f:ascvt:j:J:r:h")) != -1) {
+		switch (o) {
+			case 'f':
+				nmseffect_set_foregroundcolor(optarg);
+				break;
+			case 'a':
+				nmseffect_set_autodecrypt(1);
+				break;
+			case 's':
+				nmseffect_set_maskblank(1);
+				break;
+			case 'c':
+				nmseffect_set_clearscr(1);
+				break;
+			case 't':
+				nmseffect_set_type_speed(atoi(optarg));
+				break;
+			case 'j':
+				nmseffect_set_jumble_seconds(atoi(optarg));
+				break;
+			case 'J':
+				nmseffect_set_jumble_speed(atoi(optarg));
+				break;
+			case 'r':
+				nmseffect_set_reveal_speed(atoi(optarg));
+				break;
+			case 'v':
+				printf("sneakers version " VERSION "\n");
+				return EXIT_SUCCESS;
+			case 'h':
+				printf("Usage: sneakers [OPTIONS]\n\n");
+				printf("Options:\n");
+				printf("  -f COLOR\tSet foreground color (white, yellow, magenta, blue, green, red, cyan)\n");
+				printf("  -a\t\tAuto-decrypt (no key press required)\n");
+				printf("  -s\t\tMask blank spaces\n");
+				printf("  -c\t\tClear screen before showing output\n");
+				printf("  -t MS\t\tSet type effect speed (milliseconds per character, default: 4)\n");
+				printf("  -j SEC\tSet jumble effect duration (seconds, default: 2)\n");
+				printf("  -J MS\t\tSet jumble effect speed (milliseconds per update, default: 35)\n");
+				printf("  -r MS\t\tSet reveal effect speed (milliseconds per update, default: 50)\n");
+				printf("  -v\t\tDisplay version information\n");
+				printf("  -h\t\tDisplay this help message\n");
+				return EXIT_SUCCESS;
+			case '?':
+				if (isprint(optopt)) {
+					fprintf(stderr, "Unknown option '-%c'.\n", optopt);
+				} else {
+					fprintf(stderr, "Unknown option character '\\x%x'.\n", optopt);
+				}
+				return EXIT_FAILURE;
+		}
+	}
 
 	// Get terminal dimentions (needed for centering)
 	struct winsize w;
@@ -180,6 +239,7 @@ int main(void) {
 	}
 	strcat(display, foot2Center);
 
+	// Default setting for sneakers is to clear the screen
 	nmseffect_set_clearscr(1);
 
 	memcpy(display_uc, display, 20 * termCols);
