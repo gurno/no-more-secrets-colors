@@ -17,5 +17,9 @@ void nmseffect_set_maskblank(int);
 void nmseffect_set_clearscr(int);
 void nmseffect_use_color(int);
 void nmseffect_set_input_position(int, int);
+void nmseffect_set_type_speed(int);
+void nmseffect_set_jumble_seconds(int);
+void nmseffect_set_jumble_speed(int);
+void nmseffect_set_reveal_speed(int);
 
 #endif
